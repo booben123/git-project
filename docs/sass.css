@@ -1,0 +1,398 @@
+Вложенность:                        
+#main p {
+  color: #00ff00;
+  width: 97%;
+
+  .redbox {
+    background-color: #ff0000;
+    color: #000000;
+  }
+}
+компилируется в такой код CSS:
+
+#main p {
+  color: #00ff00;
+  width: 97%; }
+  #main p .redbox {
+    background-color: #ff0000;
+    color: #000000; }
+
+Ссылка на родителя:
+a {
+  font-weight: bold;
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+  body.firefox & { font-weight: normal; }
+}
+компилируется в:
+
+a {
+  font-weight: bold;
+  text-decoration: none; }
+  a:hover {
+    text-decoration: underline; }
+  body.firefox a {
+    font-weight: normal; }
+
+Свойства:
+.funky {
+  font: {
+    family: fantasy;
+    size: 30em;
+    weight: bold;
+  }
+}
+компилируется в:
+
+.funky {
+  font-family: fantasy;
+  font-size: 30em;
+  font-weight: bold; }
+
+
+Шаблонные селекторы:
+%inline-type {
+  display: inline-block;
+  *display: inline;
+}
+
+%for-grids {
+    min-height: 1px;
+    position: relative;
+}
+
+.sgrid-N {
+    @extend %for-grids;
+}
+компилируется в:
+
+.sgrid-N {
+  min-height: 1px;
+  position: relative;
+}
+
+Переменные:
+#main {
+  $width: 5em !global;
+  width: $width;
+}
+
+#sidebar {
+  width: $width;
+}
+компилируется в
+
+#main {
+  width: 5em;
+}
+
+#sidebar {
+  width: 5em;
+}
+Строки:
+@mixin firefox-message($selector) {
+  body.firefox #{$selector}:before {
+    content: "Hi, Firefox users!";
+  }
+}
+
+@include firefox-message(".header");
+компилируется в
+
+body.firefox .header:before {
+  content: "Hi, Firefox users!"; }
+
+Списки:
+
+nth(10px 20px 30px, 1) => 10px
+nth((Helvetica, Arial, sans-serif), 3) => sans-serif
+nth((width: 10px, length: 20px), 2) => length, 20px
+
+// Объединяем списки в один:
+join(10px 20px, 30px 40px) => 10px 20px 30px 40px
+join((blue, red), (#abc, #def)) => blue, red, #abc, #def
+join(10px, 20px) => 10px 20px
+
+// Добавляем в список элементы:
+append(10px 20px, 30px) => 10px 20px 30px
+append((blue, red), green) => blue, red, green
+append(10px 20px, 30px 40px) => 10px 20px (30px 40px)
+
+$$$$ 
+Цвет в кавычки
+@warn предупреждает об ошибках, можно вкл выкл, пишет где
+НЕЛЬЗЯ:10px * 10px == 100px * px
+p {
+  color: hsl(0, 100%, 50%);
+}
+компилируется в
+
+p {
+  color: #ff0000; }
+  p {
+  color: hsl($hue: 0, $saturation: 100%, $lightness: 50%);
+}
+@import "rounded-corners", "text-shadow";
+@import "foo.scss";
+
+Деление:
+p {
+  font: 10px/8px;             // Явный CSS, деление отсутствует
+  $width: 1000px;
+  width: $width/2;            // Используется переменная, операция деления
+  width: round(1.5)/2;        // Используется функция, операция деления
+  height: (500px/2);          // Обособление скобками, операция деления
+  margin-left: 5px + 8px/2px; // Используется +, операция деления
+}
+компилируется в
+
+p {
+  font: 10px/8px;
+  width: 500px;
+  width: 1;
+  height: 250px;
+  margin-left: 9px; }
+
+Операции с цветом: 
+p {
+  color: #010203 + #040506;
+}
+Операции строк:
+p:before {
+  content: "Foo " + Bar;
+  font-family: sans- + "serif";
+}
+компилируется в
+
+p:before {
+  content: "Foo Bar";
+  font-family: sans-serif; }
+
+И.ИЛИ.НЕ
+$menuOn: true;
+$menuDropDown: false;
+
+.menu li {
+    color: #ff0000;
+    text-decoration: underline;
+    @if $menuOn == true and $menuDropDown == true {
+        position:relative;
+    }
+}
+компилируется в
+
+.menu li {
+  color: #ff0000;
+  text-decoration: underline;
+}
+Интерполяция:
+Вы также можете использовать переменные SassScript в селекторах и в названиях свойств используя синтаксис #{} интерполяции:
+
+$name: foo;
+$attr: border;
+p.#{$name} {
+  #{$attr}-color: blue;
+}
+компилируется в
+
+p.foo {
+  border-color: blue; }
+
+@extend
+.error {
+  border: 1px #f00;
+  background-color: #fdd;
+}
+.seriousError {
+  @extend .error;
+  border-width: 3px;
+}
+компилируется в
+
+.error, .seriousError {
+  border: 1px #f00;
+  background-color: #fdd;
+}
+
+.seriousError {
+  border-width: 3px;
+}
+
+.error {
+  border: 1px #f00;
+  background-color: #fdd;
+}
+.seriousError {
+  @extend .error;
+  border-width: 3px;
+}
+.criticalError {
+  @extend .seriousError;
+  position: fixed;
+
+}
+
+.error, .seriousError, .criticalError {
+  border: 1px #f00;
+  background-color: #fdd; }
+
+.seriousError, .criticalError {
+  border-width: 3px; }
+
+.criticalError {
+  position: fixed;
+}
+
+@at-root
+
+.parent {
+  ...
+  @at-root {
+    .child1 { ... }
+    .child2 { ... }
+  }
+  .step-child { ... }
+}
+компилируется в
+
+.parent { ... }
+.child1 { ... }
+.child2 { ... }
+.parent .step-child { ... }
+
+@IF
+p {
+  @if 1 + 1 == 2 { border: 1px solid;  }
+  @if 5 < 3      { border: 2px dotted; }
+}
+p {
+  border: 1px solid; }
+
+$type: monster;
+p {
+  @if $type == ocean {
+    color: blue;
+  } @else if $type == monster {
+    color: green;
+  } @else {
+    color: black;
+  }
+}
+компилируется в
+
+p {
+  color: green; }
+
+@FOR
+@for $i from 1 through 3 {
+  .item-#{$i} { width: 2em * $i; }
+}
+компилируется в
+
+.item-1 {
+  width: 2em; }
+.item-2 {
+  width: 4em; }
+.item-3 {
+  width: 6em; }
+
+@EACH
+@each $animal in puma, sea-slug, egret, salamander {
+  .#{$animal}-icon {
+    background-image: url('/images/#{$animal}.png');
+  }
+}
+компилируется в
+
+.puma-icon {
+  background-image: url('/images/puma.png'); }
+.sea-slug-icon {
+  background-image: url('/images/sea-slug.png'); }
+
+@WHILE
+$i: 6;
+@while $i > 0 {
+  .item-#{$i} { width: 2em * $i; }
+  $i: $i - 2;
+}
+компилируется в
+
+.item-6 {
+  width: 12em; }
+
+.item-4 {
+  width: 8em; }
+
+.item-2 {
+  width: 4em; }
+
+@MIXIN
+@mixin large-text {
+  font: {
+    family: Arial;
+    size: 20px;
+    weight: bold;
+  }
+  color: #ff0000;
+}
+.page-title {
+  @include large-text;
+  padding: 4px;
+  margin-top: 10px;
+}
+компилируется в
+
+.page-title {
+  font-family: Arial;
+  font-size: 20px;
+  font-weight: bold;
+  color: #ff0000;
+  padding: 4px;
+  margin-top: 10px; }
+
+@mixin sexy-border($color, $width) {
+  border: {
+    color: $color;
+    width: $width;
+    style: dashed;
+  }
+}
+
+p { @include sexy-border(blue, 1in); }
+компилируется в
+
+p {
+  border-color: blue;
+  border-width: 1in;
+  border-style: dashed; }
+
+$color: white;
+@mixin colors($color: blue) {
+  background-color: $color;
+  @content;
+  border-color: $color;
+}
+.colors {
+  @include colors { color: $color; }
+}
+компилируется в
+
+.colors {
+  background-color: blue;
+  color: white;
+  border-color: blue;
+}
+
+FUNCTION 
+$grid-width: 40px;
+$gutter-width: 10px;
+
+@function grid-width($n) {
+  @return $n * $grid-width + ($n - 1) * $gutter-width;
+}
+
+#sidebar { width: grid-width(5); }
+компилируется в
+
+#sidebar {
+  width: 240px; }
